@@ -1,0 +1,23 @@
+# Arquivo .gitignore na raiz do projeto
+
+### Python/Django ###
+__pycache__/
+*.pyc
+.env
+venv/
+db.sqlite3
+
+### Node.js/Next.js ###
+node_modules/
+.next/
+dist/
+build/
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### IDEs e OS ###
+.vscode/
+.idea/
+.DS_Store
