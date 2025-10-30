@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16
+    container_name: crm_postgres_db
+    environment:
+      # Credenciais fixas para o banco de dados
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: crm_pass
+      POSTGRES_DB: crm_db
+    ports:
+      # Expõe a porta 5432 do container para a porta 5432 do seu localhost
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:

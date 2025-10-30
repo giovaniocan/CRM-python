@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'employees',
     'clients',
+    'suppliers',
 ]
 
 MIDDLEWARE = [
@@ -79,8 +80,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'crm_db',         # O mesmo que POSTGRES_DB
+        'USER': 'crm_user',      # O mesmo que POSTGRES_USER
+        'PASSWORD': 'crm_pass',  # O mesmo que POSTGRES_PASSWORD
+        'HOST': 'localhost',     # Conecta na sua própria máquina
+        'PORT': '5432',          # A porta que mapeamos no docker-compose
     }
 }
 
