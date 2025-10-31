@@ -90,7 +90,21 @@ git clone <url-do-repositorio>
 cd integrador-next
 ```
 
-### 2. Configuração do Backend (Django)
+### 1. Inicie o Banco de Dados (Docker)
+
+Abra um terminal na raiz do projeto (onde está o arquivo `docker-compose.yml`) e inicie o contêiner do PostgreSQL:
+
+```bash
+docker-compose up -d
+```
+
+O banco estará disponível em **localhost:5432**.
+
+---
+
+## 2. Configuração do Backend (Django)
+
+Execute estes comandos em um segundo terminal:
 
 ```bash
 # Navegue para o diretório do backend
@@ -98,21 +112,51 @@ cd Back
 
 # Crie e ative o ambiente virtual
 python -m venv venv
-# Windows
-venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
+```
 
-# Execute as migrações
+**Ative o ambiente virtual:**
+
+- **Windows (CMD/PowerShell):**
+  ```bash
+  venv\Scripts\activate
+  ```
+
+- **Windows (Git Bash):**
+  ```bash
+  source venv/Scripts/activate
+  ```
+
+- **Linux/Mac:**
+  ```bash
+  source venv/bin/activate
+  ```
+
+---
+
+**Instale as dependências (incluindo o driver do PostgreSQL):**
+
+```bash
+pip install django djangorestframework django-cors-headers psycopg2-binary
+```
+
+---
+
+**Execute as migrações (cria as tabelas no banco Docker):**
+
+```bash
 python manage.py migrate
+```
 
-# Crie um superusuário (opcional)
-python manage.py createsuperuser
+---
 
-# Inicie o servidor de desenvolvimento
+**Inicie o servidor de desenvolvimento:**
+
+```bash
 python manage.py runserver
 ```
-O backend estará disponível em `http://localhost:8000`
+
+O backend estará disponível em **http://localhost:8000**.
+
 
 ### 3. Configuração do Frontend (Next.js)
 
