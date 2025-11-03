@@ -223,7 +223,6 @@ export default function EditSupplierPage({
   return (
     <div className="bg-linear-to-br from-gray-50 via-white to-green-50/30">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
         <button
           onClick={() => router.back()}
           className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
@@ -232,7 +231,6 @@ export default function EditSupplierPage({
           Voltar
         </button>
 
-        {/* Título */}
         <div className="mb-4">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Editar Fornecedor
@@ -241,7 +239,6 @@ export default function EditSupplierPage({
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Navegação por Abas */}
           <div className="mb-6">
             <div className="flex gap-2 p-1.5 bg-gray-100 rounded-xl w-fit">
               <button
@@ -279,7 +276,6 @@ export default function EditSupplierPage({
             </div>
           </div>
 
-          {/* Aba: Dados da Empresa */}
           {activeTab === "company" && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
               <div className="flex items-center gap-3 mb-6">
@@ -346,7 +342,6 @@ export default function EditSupplierPage({
             </div>
           )}
 
-          {/* Aba: Endereço */}
           {activeTab === "address" && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
               <div className="flex items-center gap-3 mb-6">
@@ -449,7 +444,6 @@ export default function EditSupplierPage({
             </div>
           )}
 
-          {/* Botões de Ação */}
           <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="text-sm text-gray-500">
               <span className="font-medium">Dica:</span> Todos os campos

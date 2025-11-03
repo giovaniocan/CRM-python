@@ -1,5 +1,3 @@
-// Adicione estes tipos ao arquivo frontend/lib/definitions.ts
-
 import { API_URL } from "./apiConfig";
 import type { NewSupplier } from "./definitions";
 

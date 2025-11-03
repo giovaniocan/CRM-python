@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import {
   ArrowLeft,
   Save,
@@ -11,8 +11,9 @@ import {
   CreditCard,
   CheckCircle,
   XCircle,
+  Loader2,
 } from "lucide-react";
-import { createClient } from "@/lib/clients";
+import { updateClient, getClient } from "@/lib/clients";
 import type { NewClient } from "@/lib/definitions";
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -83,45 +84,23 @@ const formatCPFCNPJ = (value: string): string => {
     const cpfLimited = limited.slice(0, 11);
     if (cpfLimited.length === 0) return "";
     if (cpfLimited.length <= 3) return cpfLimited;
-    if (cpfLimited.length <= 6)
-      return `${cpfLimited.slice(0, 3)}.${cpfLimited.slice(3)}`;
-    if (cpfLimited.length <= 9)
-      return `${cpfLimited.slice(0, 3)}.${cpfLimited.slice(
-        3,
-        6
-      )}.${cpfLimited.slice(6)}`;
-    return `${cpfLimited.slice(0, 3)}.${cpfLimited.slice(
-      3,
-      6
-    )}.${cpfLimited.slice(6, 9)}-${cpfLimited.slice(9)}`;
+    if (cpfLimited.length <= 6) return `${cpfLimited.slice(0, 3)}.${cpfLimited.slice(3)}`;
+    if (cpfLimited.length <= 9) return `${cpfLimited.slice(0, 3)}.${cpfLimited.slice(3, 6)}.${cpfLimited.slice(6)}`;
+    return `${cpfLimited.slice(0, 3)}.${cpfLimited.slice(3, 6)}.${cpfLimited.slice(6, 9)}-${cpfLimited.slice(9)}`;
   }
-
+  
   const cnpjLimited = limited.slice(0, 14);
   if (cnpjLimited.length <= 2) return cnpjLimited;
-  if (cnpjLimited.length <= 5)
-    return `${cnpjLimited.slice(0, 2)}.${cnpjLimited.slice(2)}`;
-  if (cnpjLimited.length <= 8)
-    return `${cnpjLimited.slice(0, 2)}.${cnpjLimited.slice(
-      2,
-      5
-    )}.${cnpjLimited.slice(5)}`;
-  if (cnpjLimited.length <= 12)
-    return `${cnpjLimited.slice(0, 2)}.${cnpjLimited.slice(
-      2,
-      5
-    )}.${cnpjLimited.slice(5, 8)}/${cnpjLimited.slice(8)}`;
-  return `${cnpjLimited.slice(0, 2)}.${cnpjLimited.slice(
-    2,
-    5
-  )}.${cnpjLimited.slice(5, 8)}/${cnpjLimited.slice(8, 12)}-${cnpjLimited.slice(
-    12
-  )}`;
+  if (cnpjLimited.length <= 5) return `${cnpjLimited.slice(0, 2)}.${cnpjLimited.slice(2)}`;
+  if (cnpjLimited.length <= 8) return `${cnpjLimited.slice(0, 2)}.${cnpjLimited.slice(2, 5)}.${cnpjLimited.slice(5)}`;
+  if (cnpjLimited.length <= 12) return `${cnpjLimited.slice(0, 2)}.${cnpjLimited.slice(2, 5)}.${cnpjLimited.slice(5, 8)}/${cnpjLimited.slice(8)}`;
+  return `${cnpjLimited.slice(0, 2)}.${cnpjLimited.slice(2, 5)}.${cnpjLimited.slice(5, 8)}/${cnpjLimited.slice(8, 12)}-${cnpjLimited.slice(12)}`;
 };
 
 const formatPhone = (value: string): string => {
   const numbers = value.replace(/\D/g, "");
   const limited = numbers.slice(0, 11);
-
+  
   if (limited.length <= 2) {
     return limited.length > 0 ? `(${limited}` : "";
   }
@@ -129,9 +108,7 @@ const formatPhone = (value: string): string => {
     return `(${limited.slice(0, 2)}) ${limited.slice(2)}`;
   }
   if (limited.length <= 10) {
-    return `(${limited.slice(0, 2)}) ${limited.slice(2, 6)}-${limited.slice(
-      6
-    )}`;
+    return `(${limited.slice(0, 2)}) ${limited.slice(2, 6)}-${limited.slice(6)}`;
   }
   return `(${limited.slice(0, 2)}) ${limited.slice(2, 7)}-${limited.slice(7)}`;
 };
@@ -140,8 +117,11 @@ const formatName = (value: string): string => {
   return value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "");
 };
 
-export default function CreateClientPage() {
+export default function EditClientPage() {
   const router = useRouter();
+  const params = useParams();
+  const clientId = params?.id ? Number(params.id) : null;
+
   const [formData, setFormData] = useState<NewClient>({
     name: "",
     cpf_cnpj: "",
@@ -149,42 +129,60 @@ export default function CreateClientPage() {
     phone: "",
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionMessage, setSubmissionMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
 
+  useEffect(() => {
+    async function loadClient() {
+      if (!clientId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const client = await getClient(clientId);
+        setFormData({
+          name: client.name || "",
+          cpf_cnpj: client.cpf_cnpj ? formatCPFCNPJ(client.cpf_cnpj.replace(/\D/g, "")) : "",
+          email: client.email || "",
+          phone: client.phone ? formatPhone(client.phone.replace(/\D/g, "")) : "",
+        });
+      } catch (error) {
+        console.error("Erro ao carregar cliente:", error);
+        setSubmissionMessage({
+          type: "error",
+          text: "Erro ao carregar dados do cliente. Tente novamente.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadClient();
+  }, [clientId]);
+
   const validateField = (name: string, value: string): string => {
     switch (name) {
       case "name":
-        if (!value || !value.trim()) {
-          return "O nome é obrigatório";
-        }
         if (!REGEX.name.test(value.trim())) {
           return "Nome deve conter apenas letras e espaços (2-100 caracteres)";
         }
         break;
       case "email":
-        if (!value || !value.trim()) {
-          return "O email é obrigatório";
-        }
         if (!REGEX.email.test(value)) {
           return "Email inválido";
         }
         break;
       case "cpf_cnpj":
-        if (!value || !value.trim()) {
-          return "O CPF/CNPJ é obrigatório";
-        }
         if (!REGEX.cpfCnpj.test(value)) {
           return "CPF/CNPJ inválido. Use o formato: 000.000.000-00 ou 00.000.000/0001-00";
         }
         break;
       case "phone":
-        if (!value || !value.trim()) {
-          return "O telefone é obrigatório";
-        }
         if (!REGEX.phone.test(value)) {
           return "Celular inválido. Use o formato: (00) 90000-0000";
         }
@@ -212,7 +210,7 @@ export default function CreateClientPage() {
     }
 
     setFormData((prev) => ({ ...prev, [name]: formattedValue }));
-
+    
     if (fieldErrors[name]) {
       const error = validateField(name, formattedValue);
       if (!error) {
@@ -241,6 +239,7 @@ export default function CreateClientPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!clientId) return;
 
     const errors: Record<string, string> = {};
     Object.keys(formData).forEach((key) => {
@@ -262,28 +261,36 @@ export default function CreateClientPage() {
     setIsSubmitting(true);
     setSubmissionMessage(null);
     try {
-      await createClient(formData);
+      await updateClient(clientId, formData);
       setSubmissionMessage({
         type: "success",
-        text: "Cliente criado com sucesso! Redirecionando...",
+        text: "Cliente atualizado com sucesso! Redirecionando...",
       });
       setTimeout(() => {
         router.push("/clients/list");
       }, 1500);
     } catch (error) {
-      console.error("Erro ao criar cliente:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Erro desconhecido";
+      console.error("Erro ao atualizar cliente:", error);
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
       setSubmissionMessage({
         type: "error",
-        text:
-          errorMessage ||
-          "Erro ao criar cliente. Verifique os dados e tente novamente.",
+        text: errorMessage || "Erro ao atualizar cliente. Verifique os dados e tente novamente.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 text-indigo-600 animate-spin" />
+          <p className="text-gray-600">Carregando dados do cliente...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-linear-to-br from-gray-50 via-white to-indigo-50/30 min-h-screen">
@@ -298,10 +305,10 @@ export default function CreateClientPage() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Novo Cliente
+            Editar Cliente
           </h1>
           <p className="text-gray-600">
-            Preencha as informações do cliente para completar o cadastro
+            Atualize as informações do cliente
           </p>
         </div>
 
@@ -431,7 +438,7 @@ export default function CreateClientPage() {
                 className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:bg-indigo-400 disabled:shadow-none disabled:cursor-not-allowed"
               >
                 <Save className="h-5 w-5" />
-                {isSubmitting ? "Salvando..." : "Salvar Cliente"}
+                {isSubmitting ? "Salvando..." : "Salvar Alterações"}
               </button>
             </div>
           </div>
@@ -440,3 +447,4 @@ export default function CreateClientPage() {
     </div>
   );
 }
+

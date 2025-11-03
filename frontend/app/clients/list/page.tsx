@@ -92,36 +92,47 @@ export default function ListarClientesPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {clients.map((client) => (
-              <tr key={client.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {client.name}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {client.cpf_cnpj}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {client.email}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {client.phone}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <Link
-                    href={`/clients/edit/${client.id}`}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4"
-                  >
-                    <Edit className="h-5 w-5 inline-block" />
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(client.id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    <Trash2 className="h-5 w-5 inline-block" />
-                  </button>
+            {clients.length > 0 ? (
+              clients.map((client) => (
+                <tr key={client.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {client.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {client.cpf_cnpj}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {client.email}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {client.phone}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <Link
+                      href={`/clients/edit/${client.id}`}
+                      className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    >
+                      <Edit className="h-5 w-5 inline-block" />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(client.id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      <Trash2 className="h-5 w-5 inline-block" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-4 text-center text-sm text-gray-500"
+                >
+                  Nenhum cliente cadastrado.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

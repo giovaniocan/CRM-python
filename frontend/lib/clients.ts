@@ -31,7 +31,15 @@ export async function updateClient(clientId: number, clientData: NewClient) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(clientData),
     });
-    if (!response.ok) throw new Error("Erro ao atualizar cliente");
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage =
+        errorData.detail ||
+        Object.values(errorData).flat().join(", ") ||
+        "Erro ao atualizar cliente";
+      throw new Error(errorMessage);
+    }
     return await response.json();
   } catch (error) {
     console.error("Erro ao atualizar cliente:", error);
@@ -45,8 +53,20 @@ export async function deleteClient(clientId: number) {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
-    if (!response.ok) throw new Error("Erro ao deletar cliente");
-    return await response.json();
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage =
+        errorData.detail ||
+        Object.values(errorData).flat().join(", ") ||
+        "Erro ao deletar cliente";
+      throw new Error(errorMessage);
+    }
+    
+    if (response.status === 204) {
+      return { success: true };
+    }
+    return await response.json().catch(() => ({ success: true }));
   } catch (error) {
     console.error("Erro ao deletar cliente:", error);
     throw error;
@@ -59,7 +79,15 @@ export async function listClients() {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
-    if (!response.ok) throw new Error("Erro ao buscar clientes");
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage =
+        errorData.detail ||
+        Object.values(errorData).flat().join(", ") ||
+        "Erro ao buscar clientes";
+      throw new Error(errorMessage);
+    }
     return await response.json();
   } catch (error) {
     console.error("Erro ao buscar clientes:", error);
@@ -73,7 +101,15 @@ export async function getClient(clientId: number) {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
-    if (!response.ok) throw new Error("Erro ao buscar cliente");
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage =
+        errorData.detail ||
+        Object.values(errorData).flat().join(", ") ||
+        "Erro ao buscar cliente";
+      throw new Error(errorMessage);
+    }
     return await response.json();
   } catch (error) {
     console.error("Erro ao buscar cliente:", error);

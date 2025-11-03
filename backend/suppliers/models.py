@@ -2,12 +2,11 @@ from django.db import models
 
 class Supplier(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)  # Razão Social
+    name = models.CharField(max_length=100)
     cnpj = models.CharField(max_length=14, unique=True)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15)
     
-    # Endereço
     address = models.CharField(max_length=100)
     number = models.CharField(max_length=10, blank=True, null=True)
     complement = models.CharField(max_length=100, blank=True, null=True)
