@@ -48,7 +48,6 @@ export function Sidebar({ isOpen }: SidebarProps) {
           width={100}
           height={100}
           className="h-10 w-10 shrink-0"
-          quality={100}
           priority
         />
         {isOpen && (

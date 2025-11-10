@@ -40,3 +40,22 @@ export type Supplier = {
 };
 
 export type NewSupplier = Omit<Supplier, "id" | "created_at" | "updated_at">;
+
+// PRODUCTS
+
+export type Product = {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock_quantity: number;
+  supplier: number | null;
+  supplier_name?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NewProduct = Omit<
+  Product,
+  "id" | "created_at" | "updated_at" | "supplier_name"
+>;
