@@ -46,6 +46,12 @@ export async function deleteClient(clientId: number) {
       headers: { "Content-Type": "application/json" },
     });
     if (!response.ok) throw new Error("Erro ao deletar cliente");
+    
+    // CORREÇÃO: Não tenta ler JSON se for 204 No Content
+    if (response.status === 204) {
+        return { success: true };
+    }
+
     return await response.json();
   } catch (error) {
     console.error("Erro ao deletar cliente:", error);
