@@ -49,10 +49,12 @@ export async function deleteEmployee(employeeId: number) {
             headers: { "Content-Type": "application/json" },
         });
         if (!response.ok) throw new Error("Erro ao deletar funcionário");
-        // Se a sua API DELETE retornar 204 No Content (padrão do Django), 
-        // a linha abaixo pode causar um erro ao tentar parsear JSON vazio.
-        // Nos seus outros arquivos (clients.ts, suppliers.ts) você espera JSON.
-        // Se der erro, remova a linha abaixo e retorne algo como { success: true }
+        
+        // CORREÇÃO: Não tenta ler JSON se for 204 No Content
+        if (response.status === 204) {
+            return { success: true };
+        }
+        
         return await response.json();
     } catch (error) {
         console.error("Erro ao deletar funcionário:", error);

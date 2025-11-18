@@ -14,6 +14,8 @@ import {
   Home,
   CreditCard,
 } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;
@@ -174,17 +176,50 @@ export default function CreateClientPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // FIX (Validação Frontend): Checagem rápida de campos obrigatórios antes do envio
+    const requiredFields = [
+        'name', 'cpf_cnpj', 'rg', 'email', 'phone', 
+        'address', 'city', 'state'
+    ] as (keyof NewClient)[];
+    
+    const missingFields = requiredFields.filter(field => !formData[field]);
+
+    if (missingFields.length > 0) {
+        toast.error("Por favor, preencha todos os campos obrigatórios nas abas.");
+        // Redireciona para a aba que provavelmente contém o erro para ajudar o usuário
+        if (missingFields.some(field => ['cpf_cnpj', 'rg', 'email', 'phone', 'name'].includes(field))) {
+            setActiveTab('personal');
+        } else if (missingFields.some(field => ['address', 'city', 'state'].includes(field))) {
+            setActiveTab('address');
+        }
+        return;
+    }
+
     try {
       await createClient(formData);
-      router.push("/clients");
+      toast.success("Cliente criado com sucesso!");
+      setTimeout(() => router.push("/clients/list"), 1500);
     } catch (error) {
       console.error("Erro ao criar cliente:", error);
-      alert("Erro ao criar cliente. Verifique os dados e tente novamente.");
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao criar cliente.";
+      toast.error(`Erro ao criar cliente: ${errorMessage}`);
     }
   };
 
   return (
     <div className="bg-linear-to-br from-gray-50 via-white to-indigo-50/30">
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <button
