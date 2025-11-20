@@ -52,3 +52,26 @@ export type Employee = {
 };
 
 export type NewEmployee = Omit<Employee, "id" | "created_at" | "updated_at">;
+
+/// PRODUCTS
+export type Product = {
+  id: number;
+  name: string;
+  description: string;
+  price: string; // O backend envia Decimal como string
+  quantity_in_stock: number;
+  low_stock_threshold: number;
+  is_low_stock: boolean;
+};
+
+export type LowStockResponse = {
+  count: number;
+  results: Product[];
+};
+
+export type NewProduct = Omit<Product, "id" | "created_at" | "updated_at" | "is_low_stock">;
+
+export type ClientMetrics = {
+  new_this_month: number;
+  total_clients: number;
+};
